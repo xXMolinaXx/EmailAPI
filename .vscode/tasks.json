@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run API",
+			"type": "shell",
+			"command": "dotnet run",
+			"args": [],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run API watch",
+			"type": "shell",
+			"command": "dotnet watch",
+			"args": [],
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
