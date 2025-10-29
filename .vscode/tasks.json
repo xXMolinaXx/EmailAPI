@@ -16,6 +16,22 @@
 			"args": [],
 			"problemMatcher": [],
 			"group": "build"
+		},
+    {
+			"label": "postgress migration",
+			"type": "shell",
+			"command": "dotnet ef migrations add NombreDeLaMigracion",
+			"args": [],
+			"problemMatcher": [],
+			"group": "build"
+		},
+    {
+			"label": "apply migration",
+			"type": "shell",
+			"command": "dotnet ef database update",
+			"args": [],
+			"problemMatcher": [],
+			"group": "build"
 		}
 	]
 }

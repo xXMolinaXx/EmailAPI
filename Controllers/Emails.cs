@@ -11,33 +11,53 @@ using TodoApi.DTOs;
 [ApiController]
 public class Emails : ControllerBase
 {
-    [HttpPost(Name = "SendEmail")]
-    public ActionResult<ResponseAPI> SendEmail(EmailsDTO emailsDTO)
+  [HttpPost(Name = "SendEmail")]
+  private bool IsValidEmail(string email)
+  {
+    try
     {
-        try
-        {
-            // Configure SMTP client
-            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
-            smtpClient.Credentials = new NetworkCredential(Environment.GetEnvironmentVariable("SmtpUser"), Environment.GetEnvironmentVariable("SmtpPass"));
-            smtpClient.EnableSsl = true;
-            // Create email message
-            MailMessage mail = new MailMessage();
-            mail.From = new MailAddress(Environment.GetEnvironmentVariable("SmtpUser"), "Kenny Molina");
-            mail.To.Add(new MailAddress(emailsDTO.ToEmail, "Correo de prueba"));
-            mail.Subject = emailsDTO.Subject;
-            mail.Body = emailsDTO.Body;
-            mail.IsBodyHtml = true;
-            // Send email
-            smtpClient.Send(mail);
-            return Ok(new ResponseAPI { Message = "Correo enviado correctamente", StatusCode = 200 });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al enviar el correo: {ex.Message}");
-            return StatusCode(500, new { Message = "Ocurrió un error al enviar el correo", });
-        }
-
+      var addr = new MailAddress(email);
+      return addr.Address == email;
     }
+    catch
+    {
+      return false;
+    }
+  }
+  public ActionResult<ResponseAPI> SendEmail(EmailsDTO emailsDTO)
+  {
+    try
+    {
+      if (string.IsNullOrEmpty(emailsDTO.ToEmail) || string.IsNullOrEmpty(emailsDTO.Subject) || string.IsNullOrEmpty(emailsDTO.Body))
+      {
+        return BadRequest(new ResponseAPI { Message = "Todos los campos son obligatorios", StatusCode = 400 });
+      }
+      if (!IsValidEmail(emailsDTO.ToEmail))
+      {
+        return BadRequest(new ResponseAPI { Message = "El formato del correo electrónico es inválido", StatusCode = 400 });
+      }
+      // Configure SMTP client
+      SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
+      smtpClient.Credentials = new NetworkCredential(Environment.GetEnvironmentVariable("SmtpUser"), Environment.GetEnvironmentVariable("SmtpPass"));
+      smtpClient.EnableSsl = true;
+      // Create email message
+      MailMessage mail = new MailMessage();
+      mail.From = new MailAddress(Environment.GetEnvironmentVariable("SmtpUser"), "Sistema de Notificaciones");
+      mail.To.Add(new MailAddress(emailsDTO.ToEmail, "Correo de prueba"));
+      mail.Subject = emailsDTO.Subject;
+      mail.Body = emailsDTO.Body;
+      mail.IsBodyHtml = true;
+      // Send email
+      smtpClient.Send(mail);
+      return Ok(new ResponseAPI { Message = "Correo enviado correctamente", StatusCode = 200 });
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+      return StatusCode(500, new ResponseAPI { Message = "Ocurrió un error al enviar el correo", StatusCode = 500, ErrorMessage = ex.Message });
+    }
+
+  }
 }
 /*
 Template HTML en una sola línea para usar en el body JSON de Postman:
