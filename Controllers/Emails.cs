@@ -17,14 +17,12 @@ public class Emails : ControllerBase
         try
         {
             // Configure SMTP client
-            string smtpUser = Environment.GetEnvironmentVariable("emailsSettings");
-            Console.WriteLine($"SMTP Server: {smtpUser}");
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
-            smtpClient.Credentials = new NetworkCredential(Environment.GetEnvironmentVariable("emailsSettings.SMTP_USER"), Environment.GetEnvironmentVariable("emailsSettings.SMTP_PASS"));
+            smtpClient.Credentials = new NetworkCredential(Environment.GetEnvironmentVariable("SmtpUser"), Environment.GetEnvironmentVariable("SmtpPass"));
             smtpClient.EnableSsl = true;
             // Create email message
             MailMessage mail = new MailMessage();
-            mail.From = new MailAddress(Environment.GetEnvironmentVariable("emailsSettings.FROM_EMAIL"), "Kenny Molina");
+            mail.From = new MailAddress(Environment.GetEnvironmentVariable("SmtpUser"), "Kenny Molina");
             mail.To.Add(new MailAddress(emailsDTO.ToEmail, "Correo de prueba"));
             mail.Subject = emailsDTO.Subject;
             mail.Body = emailsDTO.Body;
@@ -35,6 +33,7 @@ public class Emails : ControllerBase
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Error al enviar el correo: {ex.Message}");
             return StatusCode(500, new { Message = "Ocurrió un error al enviar el correo", });
         }
 
