@@ -1,3 +1,4 @@
+using EmailAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 public class BloggingContext : DbContext
@@ -7,7 +8,7 @@ public class BloggingContext : DbContext
     {
     }
     public DbSet<Book> Books { get; set; }
-
+    public DbSet<EmailSend> EmailSends { get; set; }
     // ← QUITAR: Ya no necesitas OnConfiguring porque usas DI en Program.cs
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //     => optionsBuilder.UseNpgsql("Host=192.168.1.15;Database=books;Username=example_user;Password=example_password");
